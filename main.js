@@ -1,40 +1,71 @@
-<!DOCTYPE html>
-<html>
-<head>
-	<title>AI DJ WEB APP</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+song1 = "";
+song2 = "";
+leftWristX = 0;
+leftWistY =0;
+rightWristX = 0;
+rightWristY =0;
+scoreLeftWrist =0;
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.0.0/p5.js"></script>
+function preload()
+{
+   song1 = loadSound("Wolves.mp3");
+   song2 = loadSound("Shower.mp3");
+}
 
-  <script src="https://unpkg.com/ml5@0.4.3/dist/ml5.min.js"></script>
+function setup()
+{
+    canvas = createCanvas(600, 500);
+    canvas.center();
 
-  <link rel="stylesheet" type="text/css" href="style.css">
- <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.3.1/addons/p5.sound.min.js" integrity="sha512-wM+t5MzLiNHl2fwT5rWSXr2JMeymTtixiw2lWyVk1JK/jDM4RBSFoH4J8LjucwlDdY6Mu84Kj0gPXp7rLGaDyA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    video = createCapture(VIDEO);
+    video.hide();
 
-</head>
-<body background="background.png">
-<center>
-  	<h3 class="btn btn-danger heading">AI DJ WEB APP
-	    <br>
-	    <span class="note">NOTE - Right hand = Beckcy.G - Shower. Left Hand = Selena Gomez - Wolves</span>
-  	</h3>
-    <div class="div_speed">
-      <img src="selena.gif" class="div_speed_img">
-      <br>
-      <h3 class="btn btn-danger" id="speed">Selena Gomez</h3>
-    </div>
+    poseNet = ml5.poseNet(video, modelLoaded);
+    poseNet.on('pose', gotPoses);
+}
 
-    <div class="div_volume">
-      <img src="backyg.gif" class="div_volume_img">
-      <br>
-      <h3 class="btn btn-danger" id="volume"> Becky G </h3>
-    </div>
-	<br><br>
-</center>
+function modelLoaded()
+{
+    console.log('PoseNet Is Initialized');
+}
 
-<script src="main.js"></script>
-</body>
-</html>
+function gotPoses(results)
+{
+    if(results.length > 0)
+    {
+        console.log(results);
+        leftWristX = results[0].pose.leftWrist.x;
+        leftWristY = results[0].pose.leftWrist.y;
+        console.log("leftWristX = " + leftWristX + "leftWristY =" + leftWristY);
+
+        rightWristX = results[0].pose.rightWrist.x;
+        rightWristY = results[0].pose.rightWrist.y;
+        console.log("rightWristX = " + rightWristX + "rightWristY = " + rightWristY);
+        scoreLeftWrist = results[0].pose.keypoints[9].score;
+    }
+}
+
+function draw()
+{
+   image(video, 0, 0, 600, 500);
+   fill("#FF0000");
+   stroke("#FF0000");
+
+   if(scoreLeftWrist > 0.2)
+   {
+       circle(leftWristX, leftWristY, 20);
+       document.getElementById("volume").innerHTML = "Shower.mp3" ;
+      if (leftWristY > 0 && leftWristY < 250)
+      {
+          song1.play();
+          song1.setVolume(1);
+          song1.rate(1);
+      }
+       
+      if (leftWristY > 250 && leftWristY < 500)
+      {
+          song1.stop();
+      }
+   }
+}
+
