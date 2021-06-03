@@ -1,10 +1,11 @@
 song1 = "";
 song2 = "";
 leftWristX = 0;
-leftWistY =0;
+leftWristY =0;
 rightWristX = 0;
 rightWristY =0;
 scoreLeftWrist =0;
+scoreRightWrist =0;
 
 function preload()
 {
@@ -51,10 +52,27 @@ function draw()
    fill("#FF0000");
    stroke("#FF0000");
 
-   if(scoreLeftWrist > 0.2)
+   if(scoreRightWrist > 0.2 && leftWristY >250)
+   {
+       circle(rightWristX, rightWristY, 20);
+       document.getElementById("speed").innerHTML = "Wolves" ;
+      if (rightWristY > 0 && rightWristY < 250)
+      {
+          song2.play();
+          song2.setVolume(1);
+          song2.rate(1);
+      }
+       
+      if (rightWristY > 250 && rightWristY < 500)
+      {
+          song2.stop();
+      }
+   }
+  
+   if(scoreLeftWrist > 0.2 && rightWristY >250)
    {
        circle(leftWristX, leftWristY, 20);
-       document.getElementById("volume").innerHTML = "Shower.mp3" ;
+       document.getElementById("volume").innerHTML = "Shower" ;
       if (leftWristY > 0 && leftWristY < 250)
       {
           song1.play();
